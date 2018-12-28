@@ -1,0 +1,30 @@
+{
+  "name": "apisenado",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www"
+  },
+  "description": "Comunicação com as APIS do Senado e Camara dos Deputados para garimpar os projetos de leis tramidos e fazer coletar informações de interesse público.",
+
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nossovoto/apiSenadoCamara.git"
+  },
+  "author": "Cleber Oliveira <cleberw3b@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nossovoto/apiSenadoCamara/issues"
+  },
+  "homepage": "https://github.com/nossovoto/apiSenadoCamara#readme",
+  "dependencies": {
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "express": "~4.16.0",
+    "hbs": "~4.0.1",
+    "http-errors": "~1.6.2",
+    "morgan": "~1.9.0",
+    "axios": "~0.18.0"
+  },
+  "devDependencies": {}
+}
