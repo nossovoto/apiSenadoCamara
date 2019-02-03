@@ -5,7 +5,7 @@ const util = require('../public/javascripts/util');
 
 let params = {
     params: {
-        ano: 2018,
+        ano: 2019,
         // codigoSituacao: 32,
         // numero: 28
     }
