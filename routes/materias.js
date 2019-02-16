@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const axios = require('axios');
 const util = require('../public/javascripts/util');
+const utilMateria = require('../public/javascripts/util-materias')
 
 let params = {
     params: {
@@ -33,14 +34,15 @@ router.get('/', function(req, res, next) {
                 return;
             }
 
-            let materiaBuff = materias.Materia;
-
-            if (Array.isArray(materiaBuff)){
-                for (let i =0; i < materiaBuff.length; i++) {
-                    listMaterias.push((util.setMateria(materiaBuff[i])));
+            if (Array.isArray(materias.Materia)){
+                for (let i =0; i < materias.Materia.length; i++) {
+                    if(utilMateria.filterSiglaSubtipoMateria(materias.Materia[i])){
+                        listMaterias.push((utilMateria.setMateria(materias.Materia[i])));
+                    }
                 }
             }else{
-                listMaterias.push(util.setMateria(materiaBuff));
+                if(utilMateria.filterSiglaSubtipoMateria(materias.Materia[i]))
+                    listMaterias.push(utilMateria.setMateria(materias.Materia));
             }
 
             responseData = {
@@ -51,7 +53,7 @@ router.get('/', function(req, res, next) {
                 errors: err
             }
 
-            console.log(responseData);
+            // console.log(responseData);
 
             res.send(responseData);
 
