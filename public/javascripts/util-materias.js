@@ -37,7 +37,7 @@ function listSubTipoMateria(listMateria) {
 	for (let i = 0; i < listTipo.length; i++) {
 		list.push({ tipo: listTipo[i], descricao: listDescricao[i] });
 	}
-	return listSubTipo;
+	return list;
 }
 
 function listNomeLocalMateria(listMateria) {
