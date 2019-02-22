@@ -20,7 +20,7 @@ const URLData2019 = "https://dadosabertos.camara.leg.br/arquivos/proposicoes/jso
 /* GET users listing. */
 router.get('/', function(req, res, next) {
 
-    axios.get(URLData2018)
+    axios.get(URLData2019)
         .then( ({data}) => {
                 
             let err = "";

@@ -16,6 +16,7 @@ function cleanMateria() {
 		status: "",
 		url: "",
 		autoria: "",
+		local: "",
 		veryfied: false
 	}
 }
@@ -138,6 +139,7 @@ function setMateria(materia) {
 		newMateria.autoria = materia.AutoresPrincipais.AutorPrincipal.NomeAutor;
 	else
 		newMateria.autoria = "";
+	newMateria.local = "Senado";
 
 	return newMateria;
 }

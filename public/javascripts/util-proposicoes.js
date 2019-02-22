@@ -70,6 +70,7 @@ function cleanProposicao() {
 		status: "",
 		url: "",
 		autoria: "",
+		local: "",
 		veryfied: false
 	}
 }
@@ -111,7 +112,8 @@ function setProposicao(proposicao) {
 		filterProposicao.resumo = proposicao.ementaDetalhada;
 	else
 		filterProposicao.resumo = "";
-	proposicao.url = proposicao.urlInteiroTeor;
+	filterProposicao.url = proposicao.urlInteiroTeor;
+	filterProposicao.local = "Camara";
 
 	// console.log(filterProposicao);
 	return filterProposicao;
