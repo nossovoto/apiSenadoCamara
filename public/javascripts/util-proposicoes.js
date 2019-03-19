@@ -1,66 +1,12 @@
 // nossovoto
 
-schemaProposicao = {
-	"ano": 0,
-	"apreciacao": {
-	  "descricao": "string",
-	  "id": 0
-	},
-	"autor": {
-	  "codPartido": 0,
-	  "ideCadastro": 0,
-	  "nome": "string",
-	  "siglaPartido": "string",
-	  "siglaUF": "string"
-	},
-	"dataApresentacao": "string",
-	"ementa": "string",
-	"explicacaoEmenta": "string",
-	"id": 0,
-	"indGenero": "string",
-	"nome": "string",
-	"numero": 0,
-	"orgaoNumerador": {
-	  "id": 0,
-	  "nome": "string",
-	  "sigla": "string"
-	},
-	"qtdAutores": 0,
-	"qtdOrgaosComEstado": 0,
-	"regime": {
-	  "descricao": "string",
-	  "id": 0
-	},
-	"situacao": {
-	  "descricao": "string",
-	  "id": 0,
-	  "orgao": {
-		"codOrgaoEstado": 0,
-		"siglaOrgaoEstado": "string"
-	  },
-	  "principal": {
-		"codProposicaoPrincipal": 0,
-		"proposicaoPrincipal": "string"
-	  }
-	},
-	"tipo": {
-	  "id": 0,
-	  "nome": "string",
-	  "sigla": "string"
-	},
-	"ultimoDespacho": {
-	  "data": "2019-02-10T18:57:39.426Z",
-	  "descricao": "string"
-	}
-  }
-
-
+// return empty Proposição
 function cleanProposicao() {
 	return {
 		id: "",
 		ano: "",
 		titulo: "",
-		tema: "",
+		tema: [],
 		proposicao: "",
 		dataPublicacao: "",
 		siglaSubTipo: "",
@@ -69,9 +15,9 @@ function cleanProposicao() {
 		resumo: "",
 		status: "",
 		url: "",
-		autoria: "",
+		autoria: [],
 		local: "",
-		veryfied: false
+		verified: true
 	}
 }
 
@@ -92,33 +38,75 @@ function listSiglaTipoProposicao(listProposicoes) {
 	return list;
 }
 
+function filterAssunto(proposicao) {
+	if (proposicao.codTema === 34) 	    return 'Transparência, Fiscalização e Defesa ao Consumidor';
+	if (proposicao.codTema === 35) 		return 'Assuntos Sociais';
+	if (proposicao.codTema === 37) 	    return 'Comunicação';
+	if (proposicao.codTema === 39) 		return 'Educação, Cultura e Esporte';
+	if (proposicao.codTema === 40) 	    return 'Economia';
+	if (proposicao.codTema === 41) 		return 'Desenvolvimento Regional e Turismo';
+	if (proposicao.codTema === 42) 		return 'Constituição, Justiça e Cidadania';
+	if (proposicao.codTema === 43) 	    return 'Constituição, Justiça e Cidadania';
+	if (proposicao.codTema === 44) 		return 'Direitos Humanos';
+	if (proposicao.codTema === 46) 	    return 'Educação, Cultura e Esporte';
+	if (proposicao.codTema === 48) 	    return 'Meio Ambiente';
+	if (proposicao.codTema === 51) 	    return 'Agricultura';
+	if (proposicao.codTema === 52) 	    return 'Assuntos Sociais';
+	if (proposicao.codTema === 53) 		return 'Legislação Interna';
+	if (proposicao.codTema === 54) 		return 'Energia, Recursos Hídricos e Minerais';
+	if (proposicao.codTema === 55) 		return 'Relações Exteriores e Defesa';
+	if (proposicao.codTema === 56) 		return 'Saúde';
+	if (proposicao.codTema === 57) 		return 'Relações Exteriores e Defesa';
+	if (proposicao.codTema === 58) 		return 'Constituição, Justiça e Cidadania';
+	if (proposicao.codTema === 60) 	    return 'Desenvolvimento Regional e Turismo';
+	if (proposicao.codTema === 61) 		return 'Viação, Transporte e Mobilidade';
+	if (proposicao.codTema === 62) 		return 'Ciência, Tecnologia e Inovação';
+	if (proposicao.codTema === 64) 		return 'Agricultura';
+	if (proposicao.codTema === 66) 		return 'Indústria, Comércio e Serviços';
+	if (proposicao.codTema === 67) 		return 'Transparência, Fiscalização e Defesa ao Consumidor';
+	if (proposicao.codTema === 68) 		return 'Constituição, Justiça e Cidadania';
+	if (proposicao.codTema === 70) 		return 'Orçamentos do Governo';
+	if (proposicao.codTema === 72)     	return 'Homenagens e Datas Comemorativas';
+	if (proposicao.codTema === 74) 		return 'Política, Partidos e Eleições';
+	if (proposicao.codTema === 76)     	return 'Constituição, Justiça e Cidadania';
+	if (proposicao.codTema === 85) 		return 'N/A';
+	if (proposicao.codTema === 86) 		return 'N/A';
+	return '';
+}
+
 function setProposicao(proposicao) {
 
-	let filterProposicao = cleanProposicao();
+	let newProposicao = cleanProposicao();
 
-	filterProposicao.id = proposicao.id;
-	filterProposicao.ano = proposicao.ano;
-	filterProposicao.titulo = proposicao.descricaoTipo;
-	filterProposicao.tema = "";
-	filterProposicao.status = proposicao.ultimoStatus.descricaoTramitacao;
-	filterProposicao.proposicao = proposicao.descricaoTipo;
-	filterProposicao.dataPublicacao = proposicao.dataApresentacao;
-	
-	filterProposicao.siglaSubTipo = proposicao.siglaTipo;
-	filterProposicao.numeroProposicao = proposicao.numero;
-	filterProposicao.ementa = proposicao.ementa;
-
+	newProposicao.id = proposicao.id;
+	newProposicao.ano = proposicao.ano;
+	newProposicao.titulo = proposicao.descricaoTipo;
+	newProposicao.tema = proposicao.temas;
+	newProposicao.status = proposicao.ultimoStatus.descricaoTramitacao;
+	newProposicao.proposicao = proposicao.descricaoTipo;
+	newProposicao.dataPublicacao = proposicao.dataApresentacao;
+	newProposicao.siglaSubTipo = proposicao.siglaTipo;
+	newProposicao.numeroProposicao = proposicao.numero;
+	newProposicao.ementa = proposicao.ementa;
 	if (proposicao.ementaDetalhada !== null)
-		filterProposicao.resumo = proposicao.ementaDetalhada;
+		newProposicao.resumo = proposicao.ementaDetalhada;
 	else
-		filterProposicao.resumo = "";
-	filterProposicao.url = proposicao.urlInteiroTeor;
-	filterProposicao.local = "Camara";
+		newProposicao.resumo = "";
+	newProposicao.autoria = proposicao.autores;
+	newProposicao.url = "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=" + proposicao.id;
+	newProposicao.local = "Camara";
 
-	// console.log(filterProposicao);
-	return filterProposicao;
+
+	for (const [key, value] of Object.entries(newProposicao)) {
+		if( value === ""){
+			newProposicao.verified = false;
+			break;
+		}
+	}
+	return newProposicao;
 }
 
 module.exports.cleanProposicao = cleanProposicao;
+module.exports.filterAssunto = filterAssunto;
 module.exports.listSiglaTipoProposicao = listSiglaTipoProposicao;
 module.exports.setProposicao = setProposicao;

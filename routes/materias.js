@@ -1,66 +1,69 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const axios = require('axios');
 const util = require('../public/javascripts/util');
 const utilMateria = require('../public/javascripts/util-materias')
 
-let params = {
-    params: {
-        ano: 2019,
-        // codigoSituacao: 32,
-        // numero: 28
-    }
-};
+const URLLista = "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
+const URLMateria = "http://legis.senado.leg.br/dadosabertos/materia/";
 
-const URL = "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+router.get('/', async function(req, res, next) {
 
     let responseData = {};
-    let err = "";
 
-    axios.get(URL, params)
-        .then( ({data}) => {
+    let timeFrame = util.getTimeFrame(req);
 
-            var listMaterias = [];
-            let materias = data.PesquisaBasicaMateria.Materias;
+    let paramsList = {
+        params: {
+            dataInicioApresentacao: timeFrame.begin.replace(/-/g,''),
+            dataFimApresentacao:    timeFrame.end.replace(/-/g,''),
+            tramitando: 'S'
+        }
+    };
 
-            // console.log(materias);
+    try {
 
-            if (util.isEmpty(materias)){
-                err = "There is no Materias";
-                console.log(err);
-                return;
-            }
+        let response = await axios.get(URLLista, paramsList);
+        let materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
-            if (Array.isArray(materias.Materia)){
-                for (let i =0; i < materias.Materia.length; i++) {
-                    if(utilMateria.filterSiglaSubtipoMateria(materias.Materia[i])){
-                        listMaterias.push((utilMateria.setMateria(materias.Materia[i])));
-                    }
-                }
-            }else{
-                if(utilMateria.filterSiglaSubtipoMateria(materias.Materia[i]))
-                    listMaterias.push(utilMateria.setMateria(materias.Materia));
-            }
-
+        if (util.isEmpty(materias)){
             responseData = {
-                title: "All Materias from Senado",
-                description: "Fetched from " + URL,
-                data: listMaterias,
-                length: listMaterias.length,
-                errors: err
+                title: "API Senado - @nossovoto",
+                description: "No Matérias from Senado",
+                data: {},
+                length: 0,
+                errors: "",
             }
-
-            // console.log(responseData);
-
             res.send(responseData);
+            return;
+        }
 
-        })
-        .catch(function (error) {
-            console.log(error);
-        });
+        let listMaterias = materias.map( val =>  utilMateria.setMateria(val))
+        
+        responseData = {
+            title: "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
+            description: "Fetched from " + URLLista,
+            data: listMaterias,
+            length: listMaterias.length,
+            errors: ""
+        }
+        res.send(responseData);
+
+    } catch (e) {
+        console.error(e); // 💩 - SHIT - Remove it on production
+        let title = (e.response === undefined) ? e.message : e.response.statusText;
+        responseData = {
+            title: title,
+            description: "Failed",
+            data: {},
+            length: 0,
+            errors: e.message,
+        }
+        res.send(responseData);
+    }
 });
+
 
 module.exports = router;
