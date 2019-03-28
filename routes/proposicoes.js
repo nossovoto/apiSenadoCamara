@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const router = express.Router();
 const axios = require('axios');
 const util = require('../public/javascripts/util');
 const utilProposicoes = require('../public/javascripts/util-proposicoes');
@@ -13,9 +13,10 @@ let params = {
     }
 };
 
-const URL = "https://dadosabertos.camara.leg.br/api/v2/proposicoes";
-const URLData2018 = "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-2018.json";
-const URLData2019 = "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-2019.json";
+const URL_API =            "https://dadosabertos.camara.leg.br/api/v2/proposicoes";
+const URL_Proposicoes =    "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-";
+const URL_ProposTema =     "https://dadosabertos.camara.leg.br/arquivos/proposicoesTemas/json/proposicoesTemas-";
+const URL_ProposAutores =  "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/json/proposicoesAutores-";
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {
@@ -54,6 +55,10 @@ router.get('/', async function(req, res, next) {
             parseInt(proposicao.dataApresentacao.substring(0,10).replace(/-/g,'')) >= parseInt(timeFrame.begin.replace(/-/g,''))
             &&
             parseInt(proposicao.dataApresentacao.substring(0,10).replace(/-/g,'')) <= parseInt(timeFrame.end.replace(/-/g,''))
+            &&
+            utilProposicoes.filterSubtipo(proposicao)
+            &&
+            utilProposicoes.filterUltimoStatus(proposicao)
             );
 
         proposicoesRaw.forEach(proposicaoRaw => {
@@ -66,6 +71,15 @@ router.get('/', async function(req, res, next) {
             proposicao.autores =    autores;
             proposicoes.push(utilProposicoes.setProposicao(proposicao));
         });
+
+        // let autoria = []
+
+        // proposicoes.forEach( p => {
+        //     // console.log(p.autoria);
+        //     let a = p.autoria.filter(val => val === "Presidência da República")
+        //     if (!util.isEmpty(a))
+        //         autoria.push(a);
+        // })
 
         let responseData = {
             title:              "All Propositions from Câmara dos Deputados  - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
@@ -90,15 +104,15 @@ router.get('/', async function(req, res, next) {
 });
 
 function getURLProposicoes(ano){
-    return "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-" + ano + ".json";
+    return URL_Proposicoes + ano + ".json";
 }
 
 function getURLProposicoesTema(ano){
-    return "https://dadosabertos.camara.leg.br/arquivos/proposicoesTemas/json/proposicoesTemas-" + ano + ".json";
+    return URL_ProposTema + ano + ".json";
 }
 
 function getURLProposicoesAutores(ano){
-    return "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/json/proposicoesAutores-" + ano + ".json";
+    return URL_ProposAutores + ano + ".json";
 }
 
 module.exports = router;

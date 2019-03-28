@@ -1,5 +1,7 @@
 // nossovoto
 
+const util = require('./util');
+
 // return empty Proposição
 function cleanProposicao() {
 	return {
@@ -38,6 +40,35 @@ function listSiglaTipoProposicao(listProposicoes) {
 	return list;
 }
 
+function filterUltimoStatus(proposicao) {
+	if (proposicao.ultimoStatus.idTipoTramitacao === '131'  ||
+		proposicao.ultimoStatus.idTipoTramitacao === '134'  ||
+		proposicao.ultimoStatus.idTipoTramitacao === '502'  ||
+		proposicao.ultimoStatus.idTipoTramitacao === '630'  ||
+		proposicao.ultimoStatus.idTipoTramitacao === '1024' ||
+		proposicao.ultimoStatus.idTipoTramitacao === '1034' ||
+		proposicao.ultimoStatus.idTipoTramitacao === '1035')
+		return false;
+	else return true;
+}
+
+function filterSubtipo(proposicao) {
+
+	if (proposicao.siglaTipo === 'MPV' ||
+		proposicao.siglaTipo === 'PL'  ||
+		proposicao.siglaTipo === 'PLV' ||
+		proposicao.siglaTipo === 'PLP' ||
+		proposicao.siglaTipo === 'PEC' )
+		// proposicao.siglaTipo === 'PLN' ||
+		// proposicao.siglaTipo === 'PDL' )
+		return true;
+	else return false;
+}
+
+function filterAutoria(){
+	if (true) return '';
+}
+
 function filterAssunto(proposicao) {
 	if (proposicao.codTema === 34) 	    return 'Transparência, Fiscalização e Defesa ao Consumidor';
 	if (proposicao.codTema === 35) 		return 'Assuntos Sociais';
@@ -74,6 +105,8 @@ function filterAssunto(proposicao) {
 	return '';
 }
 
+
+
 function setProposicao(proposicao) {
 
 	let newProposicao = cleanProposicao();
@@ -95,18 +128,15 @@ function setProposicao(proposicao) {
 	newProposicao.autoria = proposicao.autores;
 	newProposicao.url = "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=" + proposicao.id;
 	newProposicao.local = "Camara";
+	newProposicao.verified = !util.IsAnyValueEmpty(newProposicao);
 
-
-	for (const [key, value] of Object.entries(newProposicao)) {
-		if( value === ""){
-			newProposicao.verified = false;
-			break;
-		}
-	}
 	return newProposicao;
 }
 
-module.exports.cleanProposicao = cleanProposicao;
-module.exports.filterAssunto = filterAssunto;
+module.exports.cleanProposicao = 		cleanProposicao;
+module.exports.filterAssunto = 			filterAssunto;
+module.exports.filterSubtipo = 			filterSubtipo;
+module.exports.filterAutoria = 			filterAutoria;
+module.exports.filterUltimoStatus = 	filterUltimoStatus;
 module.exports.listSiglaTipoProposicao = listSiglaTipoProposicao;
-module.exports.setProposicao = setProposicao;
+module.exports.setProposicao = 			setProposicao;

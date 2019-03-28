@@ -4,8 +4,8 @@ const axios = require('axios');
 const util = require('../public/javascripts/util');
 const utilMateria = require('../public/javascripts/util-materias')
 
-const URLLista = "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
-const URLMateria = "http://legis.senado.leg.br/dadosabertos/materia/";
+const URL_API_Lista =   "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
+const URL_API_Materia = "http://legis.senado.leg.br/dadosabertos/materia/";
 
 
 /* GET users listing. */
@@ -25,7 +25,7 @@ router.get('/', async function(req, res, next) {
 
     try {
 
-        let response = await axios.get(URLLista, paramsList);
+        let response = await axios.get(URL_API_Lista, paramsList);
         let materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
         if (util.isEmpty(materias)){
@@ -40,11 +40,12 @@ router.get('/', async function(req, res, next) {
             return;
         }
 
-        let listMaterias = materias.map( val =>  utilMateria.setMateria(val))
+        materias = materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia))
+        let listMaterias = materias.map( materia => utilMateria.setMateria(materia))
         
         responseData = {
             title: "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
-            description: "Fetched from " + URLLista,
+            description: "Fetched from " + URL_API_Lista,
             data: listMaterias,
             length: listMaterias.length,
             errors: ""

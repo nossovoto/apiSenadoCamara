@@ -1,5 +1,7 @@
 // nossovoto
 
+const util = require('./util');
+
 // return empty Materia
 function cleanMateria() {
 	return {
@@ -64,7 +66,6 @@ function listNomeLocalMateria(listMateria) {
 
 function filterSiglaSubtipoMateria(materia) {
     if (materia.IdentificacaoMateria.SiglaSubtipoMateria === 'ECD' ||
-        materia.IdentificacaoMateria.SiglaSubtipoMateria === 'ECD' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'MPV' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PDN' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PDS' ||
@@ -72,8 +73,9 @@ function filterSiglaSubtipoMateria(materia) {
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PLC' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PLN' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PLS' ||
-        materia.IdentificacaoMateria.SiglaSubtipoMateria === 'SCD' ||
-        materia.IdentificacaoMateria.SiglaSubtipoMateria === 'VET' ||
+        // materia.IdentificacaoMateria.SiglaSubtipoMateria === 'SCD' ||
+		materia.IdentificacaoMateria.SiglaSubtipoMateria === 'VET' ||
+		materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PRS' ||
         materia.IdentificacaoMateria.SiglaSubtipoMateria === 'PL')
             return true;
     else return false;
@@ -176,17 +178,6 @@ function filterAssuntoOld(materia){
 	return "";
 }
 
-function listCodigoMaterias(materias){
-	let listCodigoMaterias = [];
-	for (let i =0; i < materias.length; i++) {
-		if(filterSiglaSubtipoMateria(materias[i])){
-			let id = materias[i].IdentificacaoMateria.CodigoMateria;
-			listCodigoMaterias.push(id)
-		}
-	}
-	return listCodigoMaterias;
-}
-
 function setMateria(materia) {
 
 	let newMateria = cleanMateria();
@@ -216,20 +207,15 @@ function setMateria(materia) {
 	else
 		newMateria.autoria = "";
 	newMateria.local = "Senado";
-	newMateria.url = "https://www25.senado.leg.br/web/atividade/materias/-/materia/" + materia.IdentificacaoMateria.CodigoMateria; 
+	newMateria.url = "https://www25.senado.leg.br/web/atividade/materias/-/materia/" + materia.IdentificacaoMateria.CodigoMateria;
+	newMateria.verified = !util.IsAnyValueEmpty(newMateria);
 
-	for (const [key, value] of Object.entries(newMateria)) {
-		if( value === ""){
-			newMateria.verified = false;
-			break;
-		}
-	}
 	return newMateria;
 }
 
 module.exports.cleanMateria = cleanMateria;
 module.exports.listSubTipoMateria = listSubTipoMateria;
 module.exports.listNomeLocalMateria = listNomeLocalMateria;
-module.exports.listCodigoMaterias = listCodigoMaterias;
+module.exports.filterSiglaSubtipoMateria = filterSiglaSubtipoMateria;
 module.exports.filterAssunto = filterAssunto;
 module.exports.setMateria = setMateria;

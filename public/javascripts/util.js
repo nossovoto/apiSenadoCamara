@@ -9,6 +9,15 @@ function isEmpty(obj) {
 	return true;
 }
 
+function IsAnyValueEmpty(object){
+	for (const [key, value] of Object.entries(object)) {
+		if( value === ""){
+			return true;
+		}
+	}
+	return false;
+}
+
 function getTimeFrame(req) {
 
 	let dataInicio = "";
@@ -51,5 +60,6 @@ function getYearsTimeframe(begin, end){
 	return yearsArr;
 }
 // exports the variables and functions above so that other modules can use them
-module.exports.isEmpty = isEmpty;
-module.exports.getTimeFrame = getTimeFrame
+module.exports.isEmpty = 			isEmpty;
+module.exports.IsAnyValueEmpty = 	IsAnyValueEmpty;
+module.exports.getTimeFrame = 		getTimeFrame;
