@@ -113,7 +113,7 @@ function setProposicao(proposicao) {
 
 	newProposicao.id = proposicao.id;
 	newProposicao.ano = proposicao.ano;
-	newProposicao.titulo = proposicao.descricaoTipo;
+	newProposicao.titulo = proposicao.siglaTipo + ' ' + proposicao.numero + '/' + proposicao.ano;
 	newProposicao.tema = proposicao.temas;
 	newProposicao.status = proposicao.ultimoStatus.descricaoTramitacao;
 	newProposicao.proposicao = proposicao.descricaoTipo;
