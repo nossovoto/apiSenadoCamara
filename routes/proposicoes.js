@@ -4,15 +4,6 @@ const axios = require('axios');
 const util = require('../public/javascripts/util');
 const utilProposicoes = require('../public/javascripts/util-proposicoes');
 
-let params = {
-    params: {
-        // ano: 2019,
-        dataInicio: "2018-01-01",
-        dataFim: new Date().toISOString().substring(0,10),
-        itens: 100
-    }
-};
-
 const URL_API =            "https://dadosabertos.camara.leg.br/api/v2/proposicoes";
 const URL_Proposicoes =    "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-";
 const URL_ProposTema =     "https://dadosabertos.camara.leg.br/arquivos/proposicoesTemas/json/proposicoesTemas-";
@@ -23,8 +14,8 @@ router.get('/', async function(req, res, next) {
 
     let paramsList =    {};
     let responseData =  {};
-    let proposicoes =   []
-    let timeFrame =     util.getTimeFrame(req)
+    let proposicoes =   [];
+    let timeFrame =     util.getTimeFrame(req);
 
     try {
         let responseP =     timeFrame.years.map( val => axios.get(getURLProposicoes(val)));
@@ -63,7 +54,7 @@ router.get('/', async function(req, res, next) {
 
         proposicoesRaw.forEach(proposicaoRaw => {
             let temasFilter =       proposicoesTema.filter( val => proposicaoRaw.numero === val.numero);
-            let autoresFilter =     proposicoesAutores.filter( val => proposicaoRaw.id === val.idProposicao)
+            let autoresFilter =     proposicoesAutores.filter( val => proposicaoRaw.id === val.idProposicao);
             let temas =             temasFilter.map( tema => utilProposicoes.filterAssunto(tema));
             let autores =           autoresFilter.map( autor => autor.nomeAutor);
             let proposicao =        proposicaoRaw;
@@ -71,15 +62,6 @@ router.get('/', async function(req, res, next) {
             proposicao.autores =    autores;
             proposicoes.push(utilProposicoes.setProposicao(proposicao));
         });
-
-        // let autoria = []
-
-        // proposicoes.forEach( p => {
-        //     // console.log(p.autoria);
-        //     let a = p.autoria.filter(val => val === "Presidência da República")
-        //     if (!util.isEmpty(a))
-        //         autoria.push(a);
-        // })
 
         let responseData = {
             title:              "All Propositions from Câmara dos Deputados  - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,

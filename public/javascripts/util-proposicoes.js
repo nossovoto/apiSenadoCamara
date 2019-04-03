@@ -23,23 +23,6 @@ function cleanProposicao() {
 	}
 }
 
-function listSiglaTipoProposicao(listProposicoes) {
-
-	let listSiglas = [];
-	let listDesc = [];
-	for (let i = 0; i < listProposicoes.length; i++) {
-		listSiglas.push(listProposicoes[i].siglaTipo);
-		listDesc.push(listProposicoes[i].descricaoTipo);
-	}
-	let list = [];
-	for (let i = 0; i < listSiglas.length; i++) {
-		if (!list.some(e => e.sigla === listSiglas[i]) && !list.some(e => e.descricao === listDesc[i])){
-			list.push({ sigla: listSiglas[i], descricao: listDesc[i]});
-		}
-	}
-	return list;
-}
-
 function filterUltimoStatus(proposicao) {
 	if (proposicao.ultimoStatus.idTipoTramitacao === '131'  ||
 		proposicao.ultimoStatus.idTipoTramitacao === '134'  ||
@@ -53,20 +36,13 @@ function filterUltimoStatus(proposicao) {
 }
 
 function filterSubtipo(proposicao) {
-
 	if (proposicao.siglaTipo === 'MPV' ||
 		proposicao.siglaTipo === 'PL'  ||
 		proposicao.siglaTipo === 'PLV' ||
 		proposicao.siglaTipo === 'PLP' ||
 		proposicao.siglaTipo === 'PEC' )
-		// proposicao.siglaTipo === 'PLN' ||
-		// proposicao.siglaTipo === 'PDL' )
 		return true;
 	else return false;
-}
-
-function filterAutoria(){
-	if (true) return '';
 }
 
 function filterAssunto(proposicao) {
@@ -74,7 +50,7 @@ function filterAssunto(proposicao) {
 	if (proposicao.codTema === 35) 		return 'Assuntos Sociais';
 	if (proposicao.codTema === 37) 	    return 'Comunicação';
 	if (proposicao.codTema === 39) 		return 'Educação, Cultura e Esporte';
-	if (proposicao.codTema === 40) 	    return 'Economia';
+	if (proposicao.codTema === 40) 	    return 'Econômia';
 	if (proposicao.codTema === 41) 		return 'Desenvolvimento Regional e Turismo';
 	if (proposicao.codTema === 42) 		return 'Constituição, Justiça e Cidadania';
 	if (proposicao.codTema === 43) 	    return 'Constituição, Justiça e Cidadania';
@@ -111,32 +87,27 @@ function setProposicao(proposicao) {
 
 	let newProposicao = cleanProposicao();
 
-	newProposicao.id = proposicao.id;
-	newProposicao.ano = proposicao.ano;
-	newProposicao.titulo = proposicao.siglaTipo + ' ' + proposicao.numero + '/' + proposicao.ano;
-	newProposicao.tema = proposicao.temas;
-	newProposicao.status = proposicao.ultimoStatus.descricaoTramitacao;
-	newProposicao.proposicao = proposicao.descricaoTipo;
-	newProposicao.dataPublicacao = proposicao.dataApresentacao;
-	newProposicao.siglaSubTipo = proposicao.siglaTipo;
-	newProposicao.numeroProposicao = proposicao.numero;
-	newProposicao.ementa = proposicao.ementa;
-	if (proposicao.ementaDetalhada !== null)
-		newProposicao.resumo = proposicao.ementaDetalhada;
-	else
-		newProposicao.resumo = "";
-	newProposicao.autoria = proposicao.autores;
-	newProposicao.url = "https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=" + proposicao.id;
-	newProposicao.local = "Camara";
-	newProposicao.verified = !util.IsAnyValueEmpty(newProposicao);
+	newProposicao.id = 					proposicao.id;
+	newProposicao.ano = 				proposicao.ano;
+	newProposicao.titulo = 				proposicao.siglaTipo + ' ' + proposicao.numero + '/' + proposicao.ano;
+	newProposicao.tema = 				proposicao.temas;
+	newProposicao.status = 				proposicao.ultimoStatus.descricaoTramitacao;
+	newProposicao.proposicao = 			proposicao.descricaoTipo;
+	newProposicao.dataPublicacao = 		proposicao.dataApresentacao;
+	newProposicao.siglaSubTipo = 		proposicao.siglaTipo;
+	newProposicao.numeroProposicao = 	proposicao.numero;
+	newProposicao.ementa = 				proposicao.ementa;
+	newProposicao.resumo = 				proposicao.ementaDetalhada;
+	newProposicao.autoria = 			proposicao.autores;
+	newProposicao.url = 				"https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=" + proposicao.id;
+	newProposicao.local = 				"Camara";
+	newProposicao = 					util.replaceUndefined(newProposicao);
+	newProposicao.verified = 			!util.IsAnyValueEmpty(newProposicao);
 
 	return newProposicao;
 }
 
-module.exports.cleanProposicao = 		cleanProposicao;
 module.exports.filterAssunto = 			filterAssunto;
 module.exports.filterSubtipo = 			filterSubtipo;
-module.exports.filterAutoria = 			filterAutoria;
 module.exports.filterUltimoStatus = 	filterUltimoStatus;
-module.exports.listSiglaTipoProposicao = listSiglaTipoProposicao;
 module.exports.setProposicao = 			setProposicao;

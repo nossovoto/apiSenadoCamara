@@ -9,6 +9,23 @@ function isEmpty(obj) {
 	return true;
 }
 
+function getSafe(fn, defaultVal) {
+    try {
+        return fn();
+    } catch (e) {
+        return defaultVal;
+    }
+}
+
+function replaceUndefined(object){
+	Object.keys(object).forEach(key => {
+		if (object[key] === undefined) {
+			object[key] = '';
+		}
+	});
+	return object;
+}
+
 function IsAnyValueEmpty(object){
 	for (const [key, value] of Object.entries(object)) {
 		if( value === ""){
@@ -59,7 +76,10 @@ function getYearsTimeframe(begin, end){
 	yearsArr.push(endyear);
 	return yearsArr;
 }
+
 // exports the variables and functions above so that other modules can use them
 module.exports.isEmpty = 			isEmpty;
+module.exports.getSafe = 			getSafe;
+module.exports.replaceUndefined = 	replaceUndefined;
 module.exports.IsAnyValueEmpty = 	IsAnyValueEmpty;
 module.exports.getTimeFrame = 		getTimeFrame;

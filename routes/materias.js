@@ -19,7 +19,7 @@ router.get('/', async function(req, res, next) {
         params: {
             dataInicioApresentacao: timeFrame.begin.replace(/-/g,''),
             dataFimApresentacao:    timeFrame.end.replace(/-/g,''),
-            tramitando: 'S'
+            tramitando:             'S'
         }
     };
 
@@ -30,25 +30,25 @@ router.get('/', async function(req, res, next) {
 
         if (util.isEmpty(materias)){
             responseData = {
-                title: "API Senado - @nossovoto",
-                description: "No Matérias from Senado",
-                data: {},
-                length: 0,
-                errors: "",
+                title:          "API Senado - @nossovoto",
+                description:    "No Matérias from Senado",
+                data:           {},
+                length:         0,
+                errors:         "",
             }
             res.send(responseData);
             return;
         }
 
-        materias = materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia))
-        let listMaterias = materias.map( materia => utilMateria.setMateria(materia))
-        
+        materias =          materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia))
+        let listMaterias =  materias.map( materia => utilMateria.setMateria(materia))
+
         responseData = {
-            title: "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
-            description: "Fetched from " + URL_API_Lista,
-            data: listMaterias,
-            length: listMaterias.length,
-            errors: ""
+            title:          "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
+            description:    "Fetched from " + URL_API_Lista,
+            data:           listMaterias,
+            length:         listMaterias.length,
+            errors:         ""
         }
         res.send(responseData);
 
@@ -56,15 +56,14 @@ router.get('/', async function(req, res, next) {
         console.error(e); // 💩 - SHIT - Remove it on production
         let title = (e.response === undefined) ? e.message : e.response.statusText;
         responseData = {
-            title: title,
-            description: "Failed",
-            data: {},
-            length: 0,
-            errors: e.message,
+            title:          title,
+            description:    "Failed",
+            data:           {},
+            length:         0,
+            errors:         e.message,
         }
         res.send(responseData);
     }
 });
-
 
 module.exports = router;
