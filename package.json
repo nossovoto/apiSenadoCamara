@@ -6,7 +6,6 @@
     "start": "node ./bin/www"
   },
   "description": "Comunicação com as APIS do Senado e Camara dos Deputados para garimpar os projetos de leis tramidos e fazer coletar informações de interesse público.",
-
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nossovoto/apiSenadoCamara.git"
@@ -18,13 +17,14 @@
   },
   "homepage": "https://github.com/nossovoto/apiSenadoCamara#readme",
   "dependencies": {
+    "axios": "~0.18.0",
     "cookie-parser": "~1.4.3",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.0",
-    "hbs": "~4.0.1",
+    "hbs": "^4.0.3",
     "http-errors": "~1.6.2",
-    "morgan": "~1.9.0",
-    "axios": "~0.18.0"
+    "morgan": "~1.9.0"
   },
   "devDependencies": {}
 }
