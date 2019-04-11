@@ -108,7 +108,7 @@ function filterAssunto(materia) {
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'SACTFC')	return 'Transparência, Fiscalização e Defesa ao Consumidor';
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'SACE') 	return 'Educação, Cultura e Esporte';
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'CRA') 	return 'Agricultura';
-	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'CAE') 	return 'Econômia';
+	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'CAE') 	return 'Economia';
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'CAS') 	return 'Assuntos Sociais';
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'CRE') 	return 'Relações Exteriores e Defesa';
 	if (materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal === 'SACIFR')	return 'Infraestrutura';
