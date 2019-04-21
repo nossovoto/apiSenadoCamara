@@ -7,8 +7,7 @@ const utilMateria = require('../public/javascripts/util-materias')
 const URL_API_Lista =   "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
 const URL_API_Materia = "http://legis.senado.leg.br/dadosabertos/materia/";
 
-
-/* GET users listing. */
+/* Senado Federal  */
 router.get('/', async function(req, res, next) {
 
     let responseData = {};

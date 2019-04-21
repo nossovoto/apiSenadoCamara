@@ -9,7 +9,7 @@ const URL_Proposicoes =    "https://dadosabertos.camara.leg.br/arquivos/proposic
 const URL_ProposTema =     "https://dadosabertos.camara.leg.br/arquivos/proposicoesTemas/json/proposicoesTemas-";
 const URL_ProposAutores =  "https://dadosabertos.camara.leg.br/arquivos/proposicoesAutores/json/proposicoesAutores-";
 
-/* GET users listing. */
+/* Camara dos deputados. */
 router.get('/', async function(req, res, next) {
 
     let paramsList =    {};
@@ -41,6 +41,10 @@ router.get('/', async function(req, res, next) {
             res.send(responseData);
             return;
         }
+        var p = proposicoesRaw.filter( proposicao => proposicao.id == '2193540');
+        p = p[0];
+        var verified = utilProposicoes.filterSubtipo(p);
+        var verified2= utilProposicoes.filterUltimoStatus(p);
 
         proposicoesRaw = proposicoesRaw.filter( proposicao => 
             parseInt(proposicao.dataApresentacao.substring(0,10).replace(/-/g,'')) >= parseInt(timeFrame.begin.replace(/-/g,''))

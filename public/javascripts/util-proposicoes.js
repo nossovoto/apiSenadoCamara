@@ -24,7 +24,8 @@ function cleanProposicao() {
 }
 
 function filterUltimoStatus(proposicao) {
-	if (proposicao.ultimoStatus.idTipoTramitacao === '131'  ||
+	if (proposicao.ultimoStatus.idTipoTramitacao === '128'	||
+		proposicao.ultimoStatus.idTipoTramitacao === '131'  ||
 		proposicao.ultimoStatus.idTipoTramitacao === '134'  ||
 		proposicao.ultimoStatus.idTipoTramitacao === '502'  ||
 		proposicao.ultimoStatus.idTipoTramitacao === '630'  ||
