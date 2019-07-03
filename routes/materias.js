@@ -7,6 +7,23 @@ const utilMateria = require('../public/javascripts/util-materias')
 const URL_API_Lista =   "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
 const URL_API_Materia = "http://legis.senado.leg.br/dadosabertos/materia/";
 
+
+function operation(id) {
+    return axios.get("http://legis.senado.leg.br/dadosabertos/materia/movimentacoes/" + id)// successfully fill promise
+}
+
+const GetNomeLocal = async(materias) => {
+    let nomeLocal = [];
+    for (let index = 0; index < materias.length; index++) {
+        const materia = materias[index];
+        let local = util.getSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Local.NomeLocal, '');
+        // let response = await operation(materia.IdentificacaoMateria.CodigoMateria);
+        nomeLocal.push(local);
+    }
+    var set = new Set(nomeLocal);
+    return set;
+} 
+
 /* Senado Federal  */
 router.get('/', async function(req, res, next) {
 
@@ -40,6 +57,12 @@ router.get('/', async function(req, res, next) {
         }
 
         materias =          materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia))
+        
+        // let nomeLocal = await GetNomeLocal(materias);
+        // nomeLocal.forEach(element => {
+        //     console.log(element);
+        // });
+        
         let listMaterias =  materias.map( materia => utilMateria.setMateria(materia))
 
         responseData = {

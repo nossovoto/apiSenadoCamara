@@ -41,10 +41,13 @@ router.get('/', async function(req, res, next) {
             res.send(responseData);
             return;
         }
-        var p = proposicoesRaw.filter( proposicao => proposicao.id == '2193540');
-        p = p[0];
-        var verified = utilProposicoes.filterSubtipo(p);
-        var verified2= utilProposicoes.filterUltimoStatus(p);
+
+        //TODO REMOVE TRASH
+        // var p = proposicoesRaw.filter( proposicao => proposicao.id == '2193540');
+        // p = p[0];
+        // var verified = utilProposicoes.filterSubtipo(p);
+        // var verified2= utilProposicoes.filterUltimoStatus(p);
+        //
 
         proposicoesRaw = proposicoesRaw.filter( proposicao => 
             parseInt(proposicao.dataApresentacao.substring(0,10).replace(/-/g,'')) >= parseInt(timeFrame.begin.replace(/-/g,''))

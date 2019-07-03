@@ -37,13 +37,19 @@ function filterUltimoStatus(proposicao) {
 }
 
 function filterSubtipo(proposicao) {
-	if (proposicao.siglaTipo === 'MPV' ||
+	if (proposicao.siglaTipo === 'PDC' ||
+		proposicao.siglaTipo === 'MPV' ||
 		proposicao.siglaTipo === 'PL'  ||
 		proposicao.siglaTipo === 'PLV' ||
 		proposicao.siglaTipo === 'PLP' ||
 		proposicao.siglaTipo === 'PEC' )
 		return true;
 	else return false;
+}
+
+function getSubTipo(proposicao){
+	if (proposicao.siglaTipo === 'PDC') return 'PDL'; 
+	else proposicao.siglaTipo;
 }
 
 function filterAssunto(proposicao) {
@@ -90,7 +96,7 @@ function setProposicao(proposicao) {
 
 	newProposicao.id = 					proposicao.id;
 	newProposicao.ano = 				proposicao.ano;
-	newProposicao.titulo = 				proposicao.siglaTipo + ' ' + proposicao.numero + '/' + proposicao.ano;
+	newProposicao.titulo = 				getSubTipo(proposicao) + ' ' + proposicao.numero + '/' + proposicao.ano;
 	newProposicao.tema = 				proposicao.temas;
 	newProposicao.status = 				proposicao.ultimoStatus.descricaoTramitacao;
 	newProposicao.proposicao = 			proposicao.descricaoTipo;
