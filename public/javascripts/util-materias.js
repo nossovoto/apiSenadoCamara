@@ -24,7 +24,7 @@ function cleanMateria() {
 }
 
 function filterAssuntoOld(materia){
-	let codigo = util.getSafe(() => materia.Assunto.AssuntoEspecifico.Codigo, '');
+	let codigo = util.GetSafe(() => materia.Assunto.AssuntoEspecifico.Codigo, '');
 	if (codigo === "101") return "Administração Pública";
 	if (codigo === "102") return "Administração Pública";
 	if (codigo === "103") return "Administração Pública";
@@ -88,7 +88,7 @@ function filterAssuntoOld(materia){
 }
 
 function filterSiglaSubtipoMateria(materia) {
-	let siglaSubtipoMateria = util.getSafe(() => materia.IdentificacaoMateria.SiglaSubtipoMateria, '');
+	let siglaSubtipoMateria = util.GetSafe(() => materia.IdentificacaoMateria.SiglaSubtipoMateria, '');
 	if (siglaSubtipoMateria === 'ECD' || // Emenda da Camara dos Deputados a projeto de lei no senado
 		siglaSubtipoMateria === 'EDS' || // Emenda da Camada dos Deputados a proejeto de decreto legislatico
 		siglaSubtipoMateria === 'MPV' || // Medida Provrisoria
@@ -108,7 +108,7 @@ function filterSiglaSubtipoMateria(materia) {
 }
 
 function filterAssunto(materia) {
-	let siglaLocal = util.getSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal, '');
+	let siglaLocal = util.GetSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Local.SiglaLocal, '');
 	if (siglaLocal === 'CE') 		return 'Educação, Cultura e Esporte';
 	if (siglaLocal === 'SLCN') 		return 'Legislação Interna';
 	if (siglaLocal === 'CMO') 		return 'Orçamentos do Governo';
@@ -137,7 +137,7 @@ function filterAssunto(materia) {
 	if (siglaLocal === 'SACRA') 	return 'Agricultura';
 	if (siglaLocal === 'CMA') 		return 'Meio Ambiente';
 	if (siglaLocal === 'CI') 		return 'Insfraestrutura';
-	let siglaSubtipoMateria = util.getSafe(() => materia.IdentificacaoMateria.SiglaSubtipoMateria, '');
+	let siglaSubtipoMateria = util.GetSafe(() => materia.IdentificacaoMateria.SiglaSubtipoMateria, '');
 	if (siglaSubtipoMateria === 'MPV' || 
 		siglaSubtipoMateria === 'VET') return 'Decreto Presidêncial';
     return '';
@@ -151,17 +151,17 @@ function setMateria(materia) {
 	newMateria.ano = 				materia.IdentificacaoMateria.AnoMateria;
 	newMateria.titulo = 			materia.IdentificacaoMateria.DescricaoIdentificacaoMateria;
 	newMateria.tema = 				filterAssunto(materia);
-	newMateria.status = 			util.getSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Situacao.DescricaoSituacao, '');
+	newMateria.status = 			util.GetSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Situacao.DescricaoSituacao, '');
 	newMateria.materia = 			materia.IdentificacaoMateria.CodigoMateria;
 	newMateria.dataPublicacao = 	materia.DadosBasicosMateria.DataApresentacao;
 	newMateria.siglaSubTipo = 		materia.IdentificacaoMateria.SiglaCasaIdentificacaoMateria;
 	newMateria.numeroMateria = 		materia.IdentificacaoMateria.NumeroMateria;
 	newMateria.ementa = 			materia.DadosBasicosMateria.EmentaMateria;
 	newMateria.resumo = 			materia.DadosBasicosMateria.ExplicacaoEmentaMateria;
-	newMateria.autoria = 			util.getSafe(() => materia.AutoresPrincipais.AutorPrincipal.NomeAutor, '');
+	newMateria.autoria = 			util.GetSafe(() => materia.AutoresPrincipais.AutorPrincipal.NomeAutor, '');
 	newMateria.local = 				"Senado";
 	newMateria.url = 				"https://www25.senado.leg.br/web/atividade/materias/-/materia/" + materia.IdentificacaoMateria.CodigoMateria;	
-	newMateria = 					util.replaceUndefined(newMateria);
+	newMateria = 					util.ReplaceUndefined(newMateria);
 	newMateria.verified = 			!util.IsAnyValueEmpty(newMateria);
 	
 	return newMateria;

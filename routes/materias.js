@@ -1,35 +1,18 @@
-const express = require('express');
-const router = express.Router();
-const axios = require('axios');
-const util = require('../public/javascripts/util');
-const utilMateria = require('../public/javascripts/util-materias')
+const express =         require('express');
+const router =          express.Router();
+const axios =           require('axios');
+const util =            require('../public/javascripts/util');
+const utilMateria =     require('../public/javascripts/util-materias');
+const utilTramitacao =  require('../public/javascripts/util-tramitacoes');
 
 const URL_API_Lista =   "http://legis.senado.leg.br/dadosabertos/materia/pesquisa/lista";
 const URL_API_Materia = "http://legis.senado.leg.br/dadosabertos/materia/";
-
-
-function operation(id) {
-    return axios.get("http://legis.senado.leg.br/dadosabertos/materia/movimentacoes/" + id)// successfully fill promise
-}
-
-const GetNomeLocal = async(materias) => {
-    let nomeLocal = [];
-    for (let index = 0; index < materias.length; index++) {
-        const materia = materias[index];
-        let local = util.getSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Local.NomeLocal, '');
-        // let response = await operation(materia.IdentificacaoMateria.CodigoMateria);
-        nomeLocal.push(local);
-    }
-    var set = new Set(nomeLocal);
-    return set;
-} 
 
 /* Senado Federal  */
 router.get('/', async function(req, res, next) {
 
     let responseData = {};
-
-    let timeFrame = util.getTimeFrame(req);
+    let timeFrame = util.GetTimeFrame(req);
 
     let paramsList = {
         params: {
@@ -40,51 +23,30 @@ router.get('/', async function(req, res, next) {
     };
 
     try {
-
         let response = await axios.get(URL_API_Lista, paramsList);
         let materias = response.data.PesquisaBasicaMateria.Materias.Materia;
 
-        if (util.isEmpty(materias)){
-            responseData = {
-                title:          "API Senado - @nossovoto",
-                description:    "No Matérias from Senado",
-                data:           {},
-                length:         0,
-                errors:         "",
-            }
-            res.send(responseData);
+        if (util.IsEmpty(materias)){
+            res.send(util.EmptyResponse(req));
             return;
         }
 
-        materias =          materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia))
-        
-        // let nomeLocal = await GetNomeLocal(materias);
-        // nomeLocal.forEach(element => {
-        //     console.log(element);
-        // });
-        
+        materias =  materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia));
+        materias =  materias.map( materia => utilMateria.setMateria(materia));
+
         let listMaterias =  materias.map( materia => utilMateria.setMateria(materia))
 
         responseData = {
             title:          "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
             description:    "Fetched from " + URL_API_Lista,
-            data:           listMaterias,
-            length:         listMaterias.length,
+            data:           materias,
+            length:         materias.length,
             errors:         ""
         }
         res.send(responseData);
 
     } catch (e) {
-        console.error(e); // 💩 - SHIT - Remove it on production
-        let title = (e.response === undefined) ? e.message : e.response.statusText;
-        responseData = {
-            title:          title,
-            description:    "Failed",
-            data:           {},
-            length:         0,
-            errors:         e.message,
-        }
-        res.send(responseData);
+        util.ReturnError(e, res);
     }
 });
 

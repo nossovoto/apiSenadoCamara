@@ -108,7 +108,7 @@ function setProposicao(proposicao) {
 	newProposicao.autoria = 			proposicao.autores;
 	newProposicao.url = 				"https://www.camara.leg.br/proposicoesWeb/fichadetramitacao?idProposicao=" + proposicao.id;
 	newProposicao.local = 				"Camara";
-	newProposicao = 					util.replaceUndefined(newProposicao);
+	newProposicao = 					util.ReplaceUndefined(newProposicao);
 	newProposicao.verified = 			!util.IsAnyValueEmpty(newProposicao);
 
 	return newProposicao;

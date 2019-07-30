@@ -1,8 +1,9 @@
-const express = require('express');
-const router = express.Router();
-const axios = require('axios');
-const util = require('../public/javascripts/util');
+const express =         require('express');
+const router =          express.Router();
+const axios =           require('axios');
+const util =            require('../public/javascripts/util');
 const utilProposicoes = require('../public/javascripts/util-proposicoes');
+const utilTramitacao =  require('../public/javascripts/util-tramitacoes');
 
 const URL_API =            "https://dadosabertos.camara.leg.br/api/v2/proposicoes";
 const URL_Proposicoes =    "https://dadosabertos.camara.leg.br/arquivos/proposicoes/json/proposicoes-";
@@ -12,10 +13,8 @@ const URL_ProposAutores =  "https://dadosabertos.camara.leg.br/arquivos/proposic
 /* Camara dos deputados. */
 router.get('/', async function(req, res, next) {
 
-    let paramsList =    {};
-    let responseData =  {};
     let proposicoes =   [];
-    let timeFrame =     util.getTimeFrame(req);
+    let timeFrame =     util.GetTimeFrame(req);
 
     try {
         let responseP =     timeFrame.years.map( val => axios.get(getURLProposicoes(val)));
@@ -30,24 +29,10 @@ router.get('/', async function(req, res, next) {
         let proposicoesTema =       resolvePT.reduce( (acc, val) => acc.concat(val.data.dados), []);
         let proposicoesAutores =    resolvePA.reduce( (acc, val) => acc.concat(val.data.dados), []);
 
-        if (util.isEmpty(proposicoesRaw)){
-            responseData = {
-                title:          "API Câmara dos Deputados - @nossovoto",
-                description:    "No Proposições from Senado",
-                data:           {},
-                length:         0,
-                errors:         "",
-            }
-            res.send(responseData);
+        if (util.IsEmpty(proposicoesRaw)){
+            res.send(util.EmptyResponse(req));
             return;
         }
-
-        //TODO REMOVE TRASH
-        // var p = proposicoesRaw.filter( proposicao => proposicao.id == '2193540');
-        // p = p[0];
-        // var verified = utilProposicoes.filterSubtipo(p);
-        // var verified2= utilProposicoes.filterUltimoStatus(p);
-        //
 
         proposicoesRaw = proposicoesRaw.filter( proposicao => 
             parseInt(proposicao.dataApresentacao.substring(0,10).replace(/-/g,'')) >= parseInt(timeFrame.begin.replace(/-/g,''))
@@ -79,16 +64,7 @@ router.get('/', async function(req, res, next) {
         }
         res.send(responseData);
     } catch (e) {
-        console.error(e); // 💩 - SHIT - Remove it on production
-        let title = (e.response === undefined) ? e.message : e.response.statusText;
-        responseData = {
-            title:          title,
-            description:    "Failed",
-            data:           {},
-            length:         0,
-            errors:         e.message,
-        }
-        res.send(responseData);
+        util.ReturnError(e, res);
     }
 });
 
