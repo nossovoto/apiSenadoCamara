@@ -34,8 +34,6 @@ router.get('/', async function(req, res, next) {
         materias =  materias.filter( materia => utilMateria.filterSiglaSubtipoMateria(materia));
         materias =  materias.map( materia => utilMateria.setMateria(materia));
 
-        let listMaterias =  materias.map( materia => utilMateria.setMateria(materia))
-
         responseData = {
             title:          "All Materias from Senado - Timeframe: " + timeFrame.begin + " to " + timeFrame.end,
             description:    "Fetched from " + URL_API_Lista,

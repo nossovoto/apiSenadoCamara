@@ -61,23 +61,19 @@ function GetTimeFrame(req) {
 	
 	if(req.query.dataInicio === "" || typeof req.query.dataInicio === "undefined")
 		dataInicio = defaultDataInicio;
-	else if (parseInt(req.query.dataInicio.replace(/-/g,'')) 
-			<= 
-			19880922)
-			dataInicio = "1988-09-22"
+	else if (GetIntFromDate(req.query.dataInicio) <= 19880922)
+		dataInicio = "1988-09-22"
 	else
 		dataInicio = req.query.dataInicio;
 
 	if (req.query.dataFim === "" || typeof req.query.dataFim === "undefined") 
 		dataFim = new Date().toISOString().substring(0,10);
-	else if (parseInt(req.query.dataFim.replace(/-/g,'')) 
-			>= 
-			parseInt(new Date().toISOString().substring(0,10).replace(/-/g,'')))
-        	dataFim = new Date().toISOString().substring(0,10);
+	else if (GetIntFromDate(req.query.dataFim) >= GetIntFromDate(new Date().toISOString().substring(0,10)))
+        dataFim = new Date().toISOString().substring(0,10);
 	else 
 		dataFim = req.query.dataFim;
 
-	if (parseInt(dataFim.replace(/-/g,'')) < parseInt(dataInicio.replace(/-/g,'')))
+	if (GetIntFromDate(dataFim) < GetIntFromDate(dataInicio))
 		return date = { begin: dataInicio, end: new Date().toISOString().substring(0,10), years: defaultYears};
 	else
 		return date = { begin: dataInicio, end: dataFim, years: GetYearsTimeframe(dataInicio, dataFim)};
@@ -93,6 +89,10 @@ function GetYearsTimeframe(begin, end){
 	}
 	yearsArr.push(endyear);
 	return yearsArr;
+}
+
+function GetIntFromDate(date){ //Format YYYY-MM-DD
+	return parseInt(date.replace(/-/g,''));
 }
 
 function ReturnError(e, res){
@@ -116,4 +116,5 @@ module.exports.EmptyResponse = 		EmptyResponse;
 module.exports.GetSafe = 			GetSafe;
 module.exports.ReplaceUndefined = 	ReplaceUndefined;
 module.exports.IsAnyValueEmpty = 	IsAnyValueEmpty;
+module.exports.GetIntFromDate = 	GetIntFromDate;
 module.exports.GetTimeFrame = 		GetTimeFrame;

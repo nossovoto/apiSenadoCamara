@@ -152,12 +152,12 @@ function setMateria(materia) {
 	newMateria.titulo = 			materia.IdentificacaoMateria.DescricaoIdentificacaoMateria;
 	newMateria.tema = 				filterAssunto(materia);
 	newMateria.status = 			util.GetSafe(() => materia.SituacaoAtual.Autuacoes.Autuacao.Situacao.DescricaoSituacao, '');
-	newMateria.materia = 			materia.IdentificacaoMateria.CodigoMateria;
+	newMateria.materia = 			materia.IdentificacaoMateria.DescricaoSubtipoMateria;
 	newMateria.dataPublicacao = 	materia.DadosBasicosMateria.DataApresentacao;
 	newMateria.siglaSubTipo = 		materia.IdentificacaoMateria.SiglaCasaIdentificacaoMateria;
 	newMateria.numeroMateria = 		materia.IdentificacaoMateria.NumeroMateria;
 	newMateria.ementa = 			materia.DadosBasicosMateria.EmentaMateria;
-	newMateria.resumo = 			materia.DadosBasicosMateria.ExplicacaoEmentaMateria;
+	newMateria.resumo = 			util.GetSafe(() => materia.DadosBasicosMateria.ExplicacaoEmentaMateria, '');
 	newMateria.autoria = 			util.GetSafe(() => materia.AutoresPrincipais.AutorPrincipal.NomeAutor, '');
 	newMateria.local = 				"Senado";
 	newMateria.url = 				"https://www25.senado.leg.br/web/atividade/materias/-/materia/" + materia.IdentificacaoMateria.CodigoMateria;	
