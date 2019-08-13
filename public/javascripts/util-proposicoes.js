@@ -49,7 +49,7 @@ function filterSubtipo(proposicao) {
 
 function getSubTipo(proposicao){
 	if (proposicao.siglaTipo === 'PDC') return 'PDL'; 
-	else proposicao.siglaTipo;
+	return proposicao.siglaTipo;
 }
 
 function filterAssunto(proposicao) {
