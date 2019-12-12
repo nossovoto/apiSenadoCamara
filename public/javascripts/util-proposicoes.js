@@ -1,6 +1,8 @@
 // nossovoto
 
 const util = require('./util');
+const axios = require('axios');
+const URL_API_PROPOSICOES = "https://dadosabertos.camara.leg.br/api/v2/proposicoes/";
 
 // return empty Proposição
 function cleanProposicao() {
@@ -88,7 +90,19 @@ function filterAssunto(proposicao) {
 	return '';
 }
 
-
+async function getSingleProposicao(numero){
+	let responseP = await axios.get(URL_API_PROPOSICOES + numero);
+	let responseT = await axios.get(URL_API_PROPOSICOES + numero + "/temas");
+	let responseA = await axios.get(URL_API_PROPOSICOES + numero + "/autores");
+	let proposicao = responseP.data.dados;
+	let temas = responseT.data.dados.map(tema => filterAssunto(tema));
+	let autores = responseA.data.dados.map(autor => autor.nome);
+	proposicao.temas = temas;
+	proposicao.autores = autores;
+	proposicao = setProposicao(proposicao);
+	return 	proposicao;
+	
+}
 
 function setProposicao(proposicao) {
 
@@ -98,7 +112,7 @@ function setProposicao(proposicao) {
 	newProposicao.ano = 				proposicao.ano;
 	newProposicao.titulo = 				getSubTipo(proposicao) + ' ' + proposicao.numero + '/' + proposicao.ano;
 	newProposicao.tema = 				proposicao.temas;
-	newProposicao.status = 				proposicao.ultimoStatus.descricaoTramitacao;
+	newProposicao.status = 				proposicao.ultimoStatus ? proposicao.ultimoStatus.descricaoTramitacao : proposicao.statusProposicao.descricaoTramitacao;
 	newProposicao.proposicao = 			proposicao.descricaoTipo;
 	newProposicao.dataPublicacao = 		proposicao.dataApresentacao;
 	newProposicao.siglaSubTipo = 		proposicao.siglaTipo;
@@ -117,4 +131,5 @@ function setProposicao(proposicao) {
 module.exports.filterAssunto = 			filterAssunto;
 module.exports.filterSubtipo = 			filterSubtipo;
 module.exports.filterUltimoStatus = 	filterUltimoStatus;
+module.exports.getSingleProposicao = 	getSingleProposicao;
 module.exports.setProposicao = 			setProposicao;

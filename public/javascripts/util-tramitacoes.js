@@ -1,118 +1,432 @@
 // nossovoto - orgaos
 
 const axios = require('axios');
-const util =  require('./util');
+const util = require('./util');
 
 
 const URL_API_TramitacaoSenado = "http://legis.senado.leg.br/dadosabertos/materia/movimentacoes/";
 const URL_API_TramitacaoCamara = "https://dadosabertos.camara.leg.br/api/v2/proposicoes/";
 
-const comissoesPermanentesAtual = [
-	{"id":"4", 		"nome": "Mesa Diretora da Câmara dos Deputados", "sigla":"MESA"},
-	{"id":"180", 	"nome": "PLENÁRIO", "sigla":"PLEN"},
-	{"id":"2001", 	"nome": "Comissão de Agricultura, Pecuária, Abastecimento e Desenvolvimento Rural", "sigla":"CAPADR"},
-	{"id":"2002", 	"nome": "Comissão de Ciência e Tecnologia, Comunicação e Informática", "sigla":"CCTCI"},
-	{"id":"2003", 	"nome": "Comissão de Constituição e Justiça e de Cidadania", "sigla":"CCJC"},
-	{"id":"2004", 	"nome": "Comissão de Defesa do Consumidor", "sigla":"CDC"},
-	{"id":"2006", 	"nome": "Comissão de Desenvolvimento Urbano", "sigla":"CDU"},
-	{"id":"2007", 	"nome": "Comissão de Direitos Humanos e Minorias", "sigla":"CDHM"},
-	{"id":"2008", 	"nome": "Comissão de Desenvolvimento Econômico, Indústria, Comércio e Serviços", "sigla":"CDEICS"},
-	{"id":"2009", 	"nome": "Comissão de Educação", "sigla":"CE"},
-	{"id":"2010", 	"nome": "Comissão de Finanças e Tributação", "sigla":"CFT"},
-	{"id":"2011", 	"nome": "Comissão de Fiscalização Financeira e Controle", "sigla":"CFFC"},
-	{"id":"2012", 	"nome": "Comissão de Minas e Energia", "sigla":"CME"},
-	{"id":"2014", 	"nome": "Comissão de Seguridade Social e Família", "sigla":"CSSF"},
-	{"id":"2015", 	"nome": "Comissão de Trabalho, de Administração e Serviço Público", "sigla":"CTASP"},
-	{"id":"2016", 	"nome": "Comissão de Viação e Transportes", "sigla":"CVT"},
-	{"id":"2017", 	"nome": "Comissão de Integração Nacional, Desenvolvimento Regional e da Amazônia", "sigla":"CINDRA"},
-	{"id":"2018", 	"nome": "Comissão de Relações Exteriores e de Defesa Nacional", "sigla":"CREDN"},
-	{"id":"5438", 	"nome": "Comissão de Legislação Participativa", "sigla": "CLP"},
-	{"id":"5503", 	"nome": "Comissão de Segurança Pública e Combate ao Crime Organizado", "sigla": "CSPCCO"},
-	{"id":"6066", 	"nome": "Comissão de Turismo", "sigla": "CTUR"},
-	{"id":"6174", 	"nome": "Comissão de Meio Ambiente e Desenvolvimento Sustentável", "sigla": "CMADS"},
-	{"id":"536996", "nome": "Comissão de Cultura", "sigla": "CCULT"},
-	{"id":"537236", "nome": "Comissão do Esporte", "sigla": "CESPO"},
-	{"id":"537870", "nome": "Comissão de Defesa dos Direitos da Mulher", "sigla": "CMULHER"},
-	{"id":"537871", "nome": "Comissão de Defesa dos Direitos da Pessoa Idosa", "sigla": "CIDOSO"},
-	{"id":"537480", "nome": "Comissão de Defesa dos Direitos das Pessoas com Deficiência", "sigla": "CPD"}
-]
-
-const nomeLocalNaoAparecer = [
-	{"CodigoLocal": "3",	"SiglaLocal": "ADVOSF",	"NomeLocal": "Advocacia do Senado Federal","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1900-01-01"},
-	{"CodigoLocal": "434",	"SiglaLocal": "ATRSGM",	"NomeLocal": "Assessoria Técnica","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "1018",	"SiglaLocal": "COALSGM","NomeLocal": "Coordenação de Apoio Logístico","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2014-07-08"},
-	{"CodigoLocal": "559",	"SiglaLocal": "COAME",	"NomeLocal": "Coordenação de Apoio à Mesa","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "438",	"SiglaLocal": "COARQ",	"NomeLocal": "Coordenação de Arquivo","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "561",	"SiglaLocal": "COCETI",	"NomeLocal": "Coordenação de Comissões Especiais, Temporárias e Parlamentares de Inquérito","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "554",	"SiglaLocal": "COCM",	"NomeLocal": "Coordenação de Comissões Mistas","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "110",	"SiglaLocal": "CONLEG",	"NomeLocal": "Consultoria Legislativa","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1900-01-01"},
-	{"CodigoLocal": "271",	"SiglaLocal": "CONORF",	"NomeLocal": "Consultoria de Orçamentos, Fiscalização e Controle","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2001-01-01"},
-	{"CodigoLocal": "1019", "SiglaLocal": "CORELE",	"NomeLocal": "Coordenação de Redação Legislativa","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2017-02-01"},
-	{"CodigoLocal": "446",  "SiglaLocal": "CORREG",	"NomeLocal": "Corregedoria Parlamentar","TipoLocal": "C","DescricaoTipoLocal": "Colegiado","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1993-03-17"},
-	{"CodigoLocal": "1916", "SiglaLocal": "CPCMS",	"NomeLocal": "Representação Brasileira no Parlamento do Mercosul","TipoLocal": "C","DescricaoTipoLocal": "Colegiado","SiglaCasaLocal": "CN","NomeCasaLocal": "Congresso Nacional","DataCriacaoLocal": "2015-02-02"},
-	{"CodigoLocal": "2246", "SiglaLocal": "CPIBRUM","NomeLocal": "CPI de Brumadinho","TipoLocal": "C","DescricaoTipoLocal": "Colegiado","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2019-02-13"},
-	{"CodigoLocal": "133",  "SiglaLocal": "DGER",	"NomeLocal": "Diretoria-Geral","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1900-01-01"},
-	{"CodigoLocal": "1546",	"SiglaLocal": "PJS",	"NomeLocal": "Conselho do Projeto Jovem Senador","TipoLocal": "C","DescricaoTipoLocal": "Colegiado","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2010-08-12"},
-	{"CodigoLocal": "1530",	"SiglaLocal": "DJEM",	"NomeLocal": "Conselho do Diploma José Ermírio de Moraes","TipoLocal": "C","DescricaoTipoLocal": "Colegiado","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2009-10-31","CodigoLocal": "437","SiglaLocal": "PRSECR","NomeLocal": "Primeira Secretaria","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "560",	"SiglaLocal": "RPBMER",	"NomeLocal": "Representação Brasileira No Parlamento do Mercosul","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "544",	"SiglaLocal": "SACAE",	"NomeLocal": "Secretaria de Apoio à Comissão de Assuntos Econômicos","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "545",	"SiglaLocal": "SACAS",	"NomeLocal": "Secretaria de Apoio à Comissão de Assuntos Sociais","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "547",	"SiglaLocal": "SACCJ",	"NomeLocal": "Secretaria de Apoio à Comissão de Constituição, Justiça e Cidadania","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "548",	"SiglaLocal": "SACCT",	"NomeLocal": "Secretaria de Apoio à Comissão de Ciência, Tecnologia, Inovação, Comunicação e Informática","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "549",	"SiglaLocal": "SACDH",	"NomeLocal": "Secretaria de Apoio à Comissão de Direitos Humanos e Legislação Participativa","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "550",	"SiglaLocal": "SACDR",	"NomeLocal": "Secretaria de Apoio à Comissão de Desenvolvimento Regional e Turismo","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "551",	"SiglaLocal": "SACE",	"NomeLocal": "Secretaria de Apoio à Comissão de Educação, Cultura e Esporte","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "552",	"SiglaLocal": "SACIFR",	"NomeLocal": "Secretaria de Apoio à Comissão de Serviços de Infraestrutura","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "553",	"SiglaLocal": "SACMA",	"NomeLocal": "Secretaria de Apoio à Comissão de Meio Ambiente","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "556",	"SiglaLocal": "SACRA",	"NomeLocal": "Secretaria de Apoio à Comissão de Agricultura e Reforma Agrária","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "557",	"SiglaLocal": "SACRE",	"NomeLocal": "Secretaria de Apoio à Comissão de Relações Exteriores e Defesa Nacional","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "1023",	"SiglaLocal": "SACTFC",	"NomeLocal": "Secretaria de Apoio à Comissão de Transparência, Governança, Fiscalização e Controle e Defesa do Consumidor","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2017-04-05"},
-	{"CodigoLocal": "439",	"SiglaLocal": "SAOP",	"NomeLocal": "Secretaria de Apoio a Órgãos do Parlamento","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "444",	"SiglaLocal": "SCOM",	"NomeLocal": "Secretaria de Comissões","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "543",	"SiglaLocal": "SEADI",	"NomeLocal": "Secretaria de Atas e Diários","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "236",	"SiglaLocal": "SESINO",	"NomeLocal": "Serviço de Sinopse","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1970-01-01"},
-	{"CodigoLocal": "440",	"SiglaLocal": "SEXPE",	"NomeLocal": "Secretaria de Expediente","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "176",	"SiglaLocal": "SGM",	"NomeLocal": "Secretaria Geral da Mesa","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "1900-01-01"},
-	{"CodigoLocal": "442",	"SiglaLocal": "SLCN",	"NomeLocal": "Secretaria Legislativa do Congresso Nacional","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"},
-	{"CodigoLocal": "443",	"SiglaLocal": "SLSF",	"NomeLocal": "Secretaria Legislativa do Senado Federal","TipoLocal": "A","DescricaoTipoLocal": "Unidade Administrativa","SiglaCasaLocal": "SF","NomeCasaLocal": "Senado Federal","DataCriacaoLocal": "2016-01-04"}
-]
-
 function NewStatus() {
 	status = {
-		inicio:             false,
-		comissaoEspecial:   false,
-		ccjc:               false,
-		plenario:           false,
-		apensada:           {isApensada: false, propostaPrincipal: 0},
-		finalizada:         false
+		dataInicio: '',
+		comissaoExtra: [{ local: '', siglaLocal: '', situacao: '', dataInicio: '', dataFim: '' }],
+		CCJC: { situacao: '', dataInicio: '', dataFim: '' },
+		plenario: { situacao: '', dataInicio: '', dataFim: '' },
+		dataFinalizada: '',
+		dataUltimaMovimentacao: '',
+		apensada: { isApensada: false, propostaPrincipal: 0 },
+		aprovado: false,
+		sequencia: 0,
+		local: '',
+		siglaLocal: '',
+		situacao: '',
+		encaminhado: { casa: '', id: '' } // casa = senado || camara  && remetido == codigo 52
 	}
 	return status;
 }
 
-async function GetTramitacaoSenado(id){
+function FilterTramicaoCamara(tramitacao) {
+	if (tramitacao.siglaOrgao === 'MESA'
+		|| tramitacao.siglaOrgao === 'PLEN'
+		|| tramitacao.siglaOrgao === 'CAPADR'
+		|| tramitacao.siglaOrgao === 'CCTCI'
+		|| tramitacao.siglaOrgao === 'CCJC'
+		|| tramitacao.siglaOrgao === 'CDC'
+		|| tramitacao.siglaOrgao === 'CDU'
+		|| tramitacao.siglaOrgao === 'CDHM'
+		|| tramitacao.siglaOrgao === 'CDEICS'
+		|| tramitacao.siglaOrgao === 'CE'
+		|| tramitacao.siglaOrgao === 'CFT'
+		|| tramitacao.siglaOrgao === 'CME'
+		|| tramitacao.siglaOrgao === 'CSSF'
+		|| tramitacao.siglaOrgao === 'CTASP'
+		|| tramitacao.siglaOrgao === 'CVT'
+		|| tramitacao.siglaOrgao === 'CINDRA'
+		|| tramitacao.siglaOrgao === 'CREDN'
+		|| tramitacao.siglaOrgao === 'CLP'
+		|| tramitacao.siglaOrgao === 'CSPCCO'
+		|| tramitacao.siglaOrgao === 'CTUR'
+		|| tramitacao.siglaOrgao === 'CMADS'
+		|| tramitacao.siglaOrgao === 'CCULT'
+		|| tramitacao.siglaOrgao === 'CESPO'
+		|| tramitacao.siglaOrgao === 'CMULHER'
+		|| tramitacao.siglaOrgao === 'CIDOSO'
+		|| tramitacao.siglaOrgao === 'CPD') {
+		return true;
+	}
+	return false;
+}
+
+function FilterTramicaoSenado(tramitacao) {
+	if (tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '3'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '110'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '133'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '142'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '152'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '153'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '165'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '184'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '197'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '176'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '236'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '271'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '354'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '434'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '436'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '439'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '440'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '442'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '443'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '444'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '446'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '543'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '544'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '545'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '547'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '548'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '549'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '550'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '551'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '552'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '553'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '554'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '556'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '557'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '559'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '560'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '561'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1018'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1019'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1023'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1530'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1546'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1616'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1916'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '1969'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.CodigoLocal === '2246') {
+		return false;
+	}
+	return true;
+}
+
+function CompareTramitacaoCamaraBySequencia(a, b) {
+	if (a.sequencia > b.sequencia)
+		return 1;
+	else if (a.sequencia < b.sequencia)
+		return -1;
+	return 0;
+}
+
+function IsComissaoExtraCamara(tramitacao) {
+	if (tramitacao.siglaOrgao === 'PLEN'
+		|| tramitacao.siglaOrgao === 'MESA'
+		|| tramitacao.siglaOrgao === 'CCJC'
+		|| tramitacao.siglaOrgao === 'COARQ')
+		return false;
+	return true;
+}
+
+async function GetNomeLocalCamara(tramitacao) {
+	let response = await axios.get(tramitacao.uriOrgao);
+	try {
+		return response.data.dados.nome;
+	} catch (error) {
+		return '';
+	}
+}
+
+function CompareTramitacaoSenadoByDate(a, b) {
+	let dateA = util.GetIntFromDate(a.IdentificacaoTramitacao.DataTramitacao);
+	let dateB = util.GetIntFromDate(b.IdentificacaoTramitacao.DataTramitacao);
+	let ordemA = a.IdentificacaoTramitacao.NumeroOrdemTramitacao;
+	let ordemB = b.IdentificacaoTramitacao.NumeroOrdemTramitacao;
+	if (dateA > dateB)
+		return 1;
+	else if (dateA < dateB)
+		return -1;
+	else if (ordemA > ordemB)
+		return 1;
+	else if (ordemA < ordemB)
+		return -1;
+	return 0;
+}
+
+function IsComissaoExtraSenado(tramitacao) {
+	if (tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'PLEN'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'CCJ'
+		|| tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'COARQ')
+		return false;
+	return true;
+}
+
+function IsApensadaSenado(tramitacoes) {
+	// TODO
+	return { isApensada: false, propostaPrincipal: 0 }
+}
+
+function IsApensadaCamara(tramitacoes) {
+	// TODO
+	let isApensada = false;
+	for (const tramitacao of tramitacoes) {
+		if (tramitacao.codSituacao === "925") {// Codigo 925 == Apensado
+			isApensada = true;
+		}
+	}
+	return { isApensada, propostaPrincipal: 0 }
+}
+
+async function GetTramitacaoSenado(id) {
 	let response = await axios.get(URL_API_TramitacaoSenado + id);
-	let tramitacoes = response.data.MovimentacaoMateria.Materia;
-	if (util.isNull(tramitacoes)){
-		return {};
+	try {
+		if (!util.IsNull(response.data.MovimentacaoMateria.Materia.Tramitacoes.Tramitacao))
+			return response.data.MovimentacaoMateria.Materia;
+	} catch (error) {
+		return [];
 	}
-	return tramitacoes;
 }
 
-async function GetTramitacaoCamara(codigo){
+async function GetTramitacaoCamara(codigo) {
 	let response = await axios.get(URL_API_TramitacaoCamara + codigo + "/tramitacoes");
-	let tramitacoes = response.data.dados;
-	if (util.isNull(tramitacoes)){
-		return {};
+	try {
+		if (!util.IsNull(response.data.dados))
+			return response.data.dados;
+	} catch (error) {
+		return [];
 	}
-	return tramitacoes;
 }
 
-const GetStatus = async(camara, senando, id) => {
+
+// TODO -> apensado e remetido a camara
+function GetStatusSenado(movimentacaoMateria) {
+	let isCCJAprovado = false;	// Quando CCJ Aprova - Acabou o papel da Comissao de Cconstituição de Justiça e cidadania
+	let isPlenAprovado = false;	// Quando Plenario Aprova - Vai para o Presidente Aprovar ou Vetar
+	let isDecisaoTerminativa = false;	// Quando a Comissao Extra aprova sem necessidade de voto no plenario
+	let comissoesExtra = [];
 	let status = NewStatus();
-    return status;
+
+	isCCJAprovado = movimentacaoMateria.IdentificacaoMateria.SiglaSubtipoMateria === 'MPV';
+
+	let tramitacoes = movimentacaoMateria.Tramitacoes.Tramitacao;
+	tramitacoes = tramitacoes.sort(CompareTramitacaoSenadoByDate);
+	tramitacoes = tramitacoes.filter(tramitacao => FilterTramicaoSenado(tramitacao));
+
+	let firstTramitacao = tramitacoes[0];
+	let lastTramitacao = tramitacoes[tramitacoes.length - 1];
+
+	status.dataInicio = firstTramitacao.IdentificacaoTramitacao.DataTramitacao;
+	status.dataUltimaMovimentacao = lastTramitacao.IdentificacaoTramitacao.DataTramitacao;
+	status.local = lastTramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.NomeLocal;
+	status.siglaLocal = lastTramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal;
+	let atuacoes_size = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao.length;
+	status.situacao = util.GetSafe(() => movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Situacao.DescricaoSituacao, '');
+
+	for (let i = 0; i < tramitacoes.length; i++) {
+		let tramitacao = tramitacoes[i];
+
+		if (IsComissaoExtraSenado(tramitacao)) {
+			let comissaoExtra = {};
+
+			comissaoExtra.dataInicio = tramitacao.IdentificacaoTramitacao.DataTramitacao;
+			comissaoExtra.local = tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.NomeLocal;
+			comissaoExtra.siglaLocal = tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal;
+			let existComissao = comissoesExtra.some(comissao => comissao.siglaLocal === comissaoExtra.siglaLocal);
+			if (!existComissao)
+				comissoesExtra.push(comissaoExtra);
+			if (util.GetSafe(() => tramitacao.IdentificacaoTramitacao.Situacao.CodigoSituacao, '0') === '146')	// Codigo 146 == APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES
+				isDecisaoTerminativa = true;
+
+		} else if (tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'CCJ') {
+			if (status.CCJC.dataInicio === '')
+				status.CCJC.dataInicio = tramitacao.IdentificacaoTramitacao.DataTramitacao;
+			if (util.GetSafe(() => tramitacao.IdentificacaoTramitacao.Situacao.CodigoSituacao, '0') === '89') // Codigo 89  == APROVADO PARECER NA COMISSÃO
+				isCCJAprovado = true;
+			if (util.GetSafe(() => tramitacao.IdentificacaoTramitacao.Situacao.CodigoSituacao, '0') === '146')	// Codigo 146 == APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES
+				isDecisaoTerminativa = true;
+
+		} else if (tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'PLEN') {
+			if (util.GetSafe(() => tramitacao.IdentificacaoTramitacao.Situacao.CodigoSituacao, '') === '25') // Codigo 25 == APROVADO
+				isPlenAprovado = true;
+			if ((isCCJAprovado || isDecisaoTerminativa) && status.plenario.dataInicio === '')
+				status.plenario.dataInicio = tramitacao.IdentificacaoTramitacao.DataTramitacao;
+		}
+	}
+
+	if (lastTramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'COARQ' || isDecisaoTerminativa)
+		status.dataFinalizada = lastTramitacao.IdentificacaoTramitacao.DataTramitacao;
+
+	if (util.GetSafe(() => movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Situacao.CodigoSituacao, '') === '64') {// Codigo 64 == TRANSFORMADA EM NORMA JURÍDICA"
+		status.aprovado = true;
+		status.dataFinalizada = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Situacao.DataSituacao;
+	}
+
+	if (status.situacao === 'PREJUDICADA') {
+		status.local = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Local.NomeLocal;
+		status.siglaLocal = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Local.SiglaLocal;
+		status.dataFinalizada = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Situacao.DataSituacao;
+		status.dataUltimaMovimentacao = movimentacaoMateria.SituacaoAtual.Autuacoes.Autuacao[atuacoes_size - 1].Local.DataLocal;
+	}
+
+	let tramitacaoCE = [];
+	for (let i = 0; i < comissoesExtra.length; i++) {
+		let ce = comissoesExtra[i];
+		tramitacaoCE[i] = tramitacoes.filter(tramitacao => tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal == ce.siglaLocal);
+		let lastTramitCE = {};
+		for (let x = tramitacaoCE[i].length - 1; x >= 0; x--) {
+			if (util.GetSafe(() => tramitacaoCE[i][x].IdentificacaoTramitacao.Situacao.DescricaoSituacao, '') !== '') {
+				lastTramitCE.siglaLocal = tramitacaoCE[i][x].IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal;
+				lastTramitCE.situacao = tramitacaoCE[i][x].IdentificacaoTramitacao.Situacao.DescricaoSituacao;
+				if (util.GetSafe(() => tramitacaoCE[i][x].IdentificacaoTramitacao.Situacao.CodigoSituacao, '') === '89' 	// Codigo 89  == APROVADO PARECER NA COMISSÃO
+					|| util.GetSafe(() => tramitacaoCE[i][x].IdentificacaoTramitacao.Situacao.CodigoSituacao, '') === '146' 	// Codigo 146 == APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES
+					|| util.GetSafe(() => tramitacaoCE[i][x].IdentificacaoTramitacao.Situacao.DescricaoSituacao, '') === 'PREJUDICADA')
+					lastTramitCE.dataFim = tramitacaoCE[i][x].IdentificacaoTramitacao.DataTramitacao;
+				else
+					lastTramitCE.dataFim = '';
+				break;
+			}
+		}
+
+		for (let z = 0; z < comissoesExtra.length; z++) {
+			if (comissoesExtra[z].siglaLocal === lastTramitCE.siglaLocal) {
+				comissoesExtra[z].situacao = lastTramitCE.situacao;
+				comissoesExtra[z].dataFim = lastTramitCE.dataFim;
+				break;
+			}
+		}
+	}
+
+	status.comissaoExtra = comissoesExtra;
+
+	let tramitacaoCCJ = tramitacoes.filter(tramitacao => tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'CCJ');
+	for (i = tramitacaoCCJ.length - 1; i >= 0; i--) {
+		if (util.GetSafe(() => tramitacaoCCJ[i].IdentificacaoTramitacao.Situacao.DescricaoSituacao, '') !== '') {
+			if (status.CCJC.dataInicio !== '')
+				status.CCJC.situacao = tramitacaoCCJ[i].IdentificacaoTramitacao.Situacao.DescricaoSituacao;
+			if (isCCJAprovado || status.situacao === 'PREJUDICADA')
+				status.CCJC.dataFim = tramitacaoCCJ[i].IdentificacaoTramitacao.DataTramitacao;
+			break;
+		}
+	}
+
+	let tramitacaoPLEN = tramitacoes.filter(tramitacao => tramitacao.IdentificacaoTramitacao.OrigemTramitacao.Local.SiglaLocal === 'PLEN');
+	for (i = tramitacaoPLEN.length - 1; i >= 0; i--) {
+		if (util.GetSafe(() => tramitacaoPLEN[i].IdentificacaoTramitacao.Situacao.DescricaoSituacao, '') !== '') {
+			if (status.plenario.dataInicio !== '')
+				if (status.situacao === 'PREJUDICADA')
+					status.plenario.situacao = 'PREJUDICADA';
+				else
+					status.plenario.situacao = tramitacaoPLEN[i].IdentificacaoTramitacao.Situacao.DescricaoSituacao;
+			if (isPlenAprovado || status.situacao === 'PREJUDICADA')
+				status.plenario.dataFim = tramitacaoPLEN[i].IdentificacaoTramitacao.DataTramitacao;
+			break;
+		}
+	}
+
+	return status;
 }
 
-module.exports.NewStatus = 					NewStatus;
-module.exports.GetStatus = 					GetStatus;
-module.exports.GetTramitacaoSenado = 		GetTramitacaoSenado;
-module.exports.GetTramitacaoCamara = 		GetTramitacaoCamara;
+async function GetStatusCamara(tramitacoes) {
+	let isCCJAprovodo = false;	// Quando CCJ Aprova - Acabou o papel da Comissao de Cconstituição de Justiça e cidadania
+	let isPlenAprovado = false;	// Quando Plenario Aprova - Vai para o Presidente Aprovar ou Vetar
+	let isDecisaoTerminativa = false;	// Quando a Comissao Extra aprova sem necessidade de voto no plenario
+	let comissoesExtra = [];
+	let status = NewStatus();
+
+	status.sequencia = tramitacoes.length;
+	tramitacoes = tramitacoes.sort(CompareTramitacaoCamaraBySequencia);
+	tramitacoes = tramitacoes.filter(tramitacao => FilterTramicaoCamara(tramitacao));
+
+	status.apensada = IsApensadaCamara(tramitacoes);
+	let firstTramitacao = tramitacoes[0];
+	let lastTramitacao = tramitacoes[tramitacoes.length - 1];
+
+	status.dataInicio = util.ParseDate(firstTramitacao.dataHora);
+	status.dataUltimaMovimentacao = util.ParseDate(lastTramitacao.dataHora);
+	status.local = await GetNomeLocalCamara(lastTramitacao);
+	status.siglaLocal = lastTramitacao.siglaOrgao;
+	status.situacao = lastTramitacao.descricaoSituacao ? lastTramitacao.descricaoSituacao : lastTramitacao.descricaoTramitacao;
+
+	for (let i = 0; i < tramitacoes.length; i++) {
+		let tramitacao = tramitacoes[i];
+
+		if (IsComissaoExtraCamara(tramitacao)) {
+			let comissaoExtra = {};
+
+			comissaoExtra.dataInicio = util.ParseDate(tramitacao.dataHora);
+			comissaoExtra.local = await GetNomeLocalCamara(tramitacao);
+			comissaoExtra.siglaLocal = tramitacao.siglaOrgao;
+			let existComissao = comissoesExtra.some(comissao => comissao.siglaLocal === comissaoExtra.siglaLocal);
+			if (!existComissao)
+				comissoesExtra.push(comissaoExtra);
+			//TODO -> DECISAO TERMINATIVA
+			if (tramitacao.codTipoTramitacao === 'xx')	// Codigo xx == APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES
+				isDecisaoTerminativa = true;
+
+		} else if (tramitacao.siglaOrgao === 'CCJC') {
+			if (status.CCJC.dataInicio === '')
+				status.CCJC.dataInicio = util.ParseDate(tramitacao.dataHora);
+			if (tramitacao.codTipoTramitacao === '240') // Codigo 240 == Aprovação
+				isCCJAprovodo = true;
+			//TODO -> CCJC Decisao terminativa
+		} else if (tramitacao.siglaOrgao === 'PLEN' || tramitacao.siglaOrgao === 'MESA') {
+			//TODO -> Aprovado no PLEN
+			if (tramitacao.codTipoTramitacao === '244') // Codigo 244 == APROVACAO DE PROPOSICAO EM PLENARIO
+				isPlenAprovado = true;
+			if ((isCCJAprovodo || isDecisaoTerminativa) && status.plenario.dataInicio === '')
+				status.plenario.dataInicio = util.ParseDate(tramitacao.dataHora);
+		}
+
+		// TODO -> TRATAR CODIGO 128 REMESSA AO SENADO
+
+		if (tramitacao.codTipoTramitacao === '251') { // Codigo 251 == TRANSFORMADA EM NORMA JURÍDICA
+			status.aprovado = true;
+			status.dataFinalizada = util.ParseDate(tramitacao.dataHora);
+		}
+
+		if (tramitacao.codTipoTramitacao === '200') { // Codigo 200 == RETIRADA PELO AUTOR - REJEITADO
+			status.aprovado = false;
+			status.dataFinalizada = util.ParseDate(tramitacao.dataHora);
+		}
+
+	}
+
+	//TODO ve se ta certo
+	if (lastTramitacao.codTipoTramitacao === '502' || isDecisaoTerminativa) // Codigo 251 == ARQUIVAMENTO
+		status.dataFinalizada = lutil.ParseDate(lastTramitacao.dataHora);
+
+	let tramitacaoCE = [];
+	for (let i = 0; i < comissoesExtra.length; i++) {
+		let comissaoExtra = comissoesExtra[i];
+		tramitacaoCE[i] = tramitacoes.filter(tramitacao => tramitacao.siglaOrgao == comissaoExtra.siglaLocal);
+		let lastTramitCE = {};
+		for (let x = tramitacaoCE[i].length - 1; x >= 0; x--) {
+			lastTramitCE.situacao = util.GetSafe(() => tramitacaoCE[i][x].descricaoSituacao, tramitacaoCE[i][x].descricaoTramitacao);
+			lastTramitCE.siglaLocal = tramitacaoCE[i][x].siglaOrgao;
+			if (tramitacaoCE[i][x].codTipoTramitacao === '240' 	// Codigo 240 == APROVADO
+				|| tramitacaoCE[i][x].codTipoTramitacao === 'XX' 	// Codigo xx == APRECIADA EM DECISÃO TERMINATIVA PELAS COMISSÕES
+				|| tramitacaoCE[i][x].codTipoTramitacao === 'XX')	// Codigo xx == PREJUDICADA --- ACHO QUE NAO TEM, PRECISA PESQUISAR MELHOR
+				lastTramitCE.dataFim = tramitacaoCE[i][x].IdentificacaoTramitacao.DataTramitacao;
+			else
+				lastTramitCE.dataFim = '';
+			break;
+		}
+		for (let z = 0; z < comissoesExtra.length; z++) {
+			if (comissoesExtra[z].siglaLocal === lastTramitCE.siglaLocal) {
+				comissoesExtra[z].situacao = lastTramitCE.situacao;
+				comissoesExtra[z].dataFim = lastTramitCE.dataFim;
+				break;
+			}
+		}
+	}
+
+	status.comissaoExtra = comissoesExtra;
+	return status;
+}
+
+module.exports.NewStatus = NewStatus;
+module.exports.GetStatusSenado = GetStatusSenado;
+module.exports.GetStatusCamara = GetStatusCamara;
+module.exports.FilterTramicaoCamara = FilterTramicaoCamara;
+module.exports.FilterTramicaoSenado = FilterTramicaoSenado;
+module.exports.GetTramitacaoSenado = GetTramitacaoSenado;
+module.exports.GetTramitacaoCamara = GetTramitacaoCamara;

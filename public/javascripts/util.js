@@ -48,7 +48,7 @@ function IsAnyValueEmpty(object){
 }
 
 function IsNull(value){
-	if (value == null) {
+	if (value === null || typeof value === "undefined") {
 		return true;
 	}
 	return false;
@@ -95,6 +95,10 @@ function GetIntFromDate(date){ //Format YYYY-MM-DD
 	return parseInt(date.replace(/-/g,''));
 }
 
+function ParseDate(date){
+	return date.slice(0, -6);
+}
+
 function ReturnError(e, res){
     console.error(e); // 💩 - SHIT - Remove it on production
     let title = IsNull(e.response) ? e.message : e.response.statusText;
@@ -117,4 +121,5 @@ module.exports.GetSafe = 			GetSafe;
 module.exports.ReplaceUndefined = 	ReplaceUndefined;
 module.exports.IsAnyValueEmpty = 	IsAnyValueEmpty;
 module.exports.GetIntFromDate = 	GetIntFromDate;
+module.exports.ParseDate = 			ParseDate;
 module.exports.GetTimeFrame = 		GetTimeFrame;

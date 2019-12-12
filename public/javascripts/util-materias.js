@@ -1,6 +1,8 @@
 // nossovoto
 
 const util = require('./util');
+const axios = require('axios');
+const URL_API_Materia = "http://legis.senado.leg.br/dadosabertos/materia/";
 
 // return empty Materia
 function cleanMateria() {
@@ -143,6 +145,16 @@ function filterAssunto(materia) {
     return '';
 }
 
+async function getSingleMateria(codigo){	
+	//TODO status:"" tema:""
+	let response = await axios.get(URL_API_Materia + codigo);
+	let materia = response.data.DetalheMateria.Materia;
+	let autorPrincipal = materia.Autoria.Autor[0].NomeAutor;
+	materia = setMateria(materia);
+	materia.autoria = autorPrincipal;
+	return materia;
+}
+
 function setMateria(materia) {
 
 	let newMateria = cleanMateria();
@@ -167,5 +179,8 @@ function setMateria(materia) {
 	return newMateria;
 }
 
+
+
 module.exports.filterSiglaSubtipoMateria = filterSiglaSubtipoMateria;
+module.exports.getSingleMateria = getSingleMateria;
 module.exports.setMateria = setMateria;

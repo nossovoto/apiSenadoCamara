@@ -64,3 +64,4 @@ typings/
 .idea/*
 
 \.vscode/launch\.json
+.DS_*
